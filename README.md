@@ -113,6 +113,24 @@ PORT=5000
 | PUT | /api/tasks/:id | Atualiza uma tarefa |
 | DELETE | /api/tasks/:id | Remove uma tarefa |
 
+
+## 📌 Estrutura do Banco de Dados
+no projeto, escolhi usar o banco de dados MongoDB, Onde os dados serão armazenados em uma coleção chamada tasks dentro de um banco de dados que podemos chamar de todo_app.
+
+🗂 Modelo de Tarefa (Task)
+Cada tarefa terá os seguintes atributos:
+
+| **Campo**	| **Tipo**	| **Descrição**
+| --------  | --------- | ------------ |
+| _id	| ObjectId	| Identificador único gerado pelo MongoDB |
+| title	| String	| Título da tarefa |
+| description |	String | Descrição opcional da tarefa |
+| completed	| Boolean | Define se a tarefa foi concluída (true) ou não (false) |
+| priority | String | Prioridade da tarefa ("Baixa", "Média", "Alta") |
+| dueDate | Date | Data de vencimento da tarefa |
+| createdAt | Date | Data de criação da tarefa |
+
+
 ## 🤝 Contribuição
 
 - Faça um fork do projeto
