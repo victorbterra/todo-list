@@ -26,5 +26,5 @@ app.listen(PORT, () =>
 // Conexão com o MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Conectado ao MongoDB"))
-  .catch((error) => console.error("❌ Erro ao conectar ao MongoDB:", error));
+  .then(() => console.log("✅ Conectado ao banco de dados"))
+  .catch((error) => console.error("❌ Erro ao conectar ao Banco de dados:", error));
