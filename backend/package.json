@@ -2,11 +2,12 @@
   "name": "backend-todolist",
   "version": "1.0.0",
   "description": "Uma aplicação full stack para gerenciamento de tarefas, construída com React.js, Node.js, Express e MongoDB.",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "Victor Terra",
