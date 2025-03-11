@@ -3,9 +3,9 @@ import express from "express"; // Importa o módulo express
 import bcrypt from "bcryptjs"; // Importa o módulo bcryptjs para criptografia de senhas
 import jwt from "jsonwebtoken"; // Importa o módulo jsonwebtoken para criação de tokens JWT
 import { body, validationResult } from "express-validator"; // Importa funções do express-validator para validação de dados
-import User from "../models/userModel.js"; // Importa o modelo de usuário
+import User from "../models/authModels.js"; // Importa o modelo de usuário
 
-const app = express(); // Cria um roteador do express
+const router = express(); // Cria um roteador do express
 
 /**
  * @route POST /register
@@ -16,7 +16,7 @@ const app = express(); // Cria um roteador do express
  * @param {string} senha - A senha do usuário
  * @returns {object} - Uma mensagem de sucesso ou uma mensagem de erro
  */
-app.post(
+router.post(
     "/register",
     [
         body("name").notEmpty().withMessage("Nome é obrigatório"), // Valida se o campo nome não está vazio
@@ -54,7 +54,7 @@ app.post(
  * @param {string} senha - A senha do usuário
  * @returns {object} - Um token JWT ou uma mensagem de erro
  */
-app.post(
+router.post(
     "/login",
     [
         body("email").isEmail().withMessage("Email inválido"), // Valida se o campo email é um email válido
