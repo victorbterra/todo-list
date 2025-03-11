@@ -1,11 +1,13 @@
 // AQUI ESTÃO TODAS AS ROTAS DA APLICAÇÃO
 import express from "express";
+import auth from "../middlewares/auth.js";
 import Task from "../models/taskModels.js";
+
 
 const router = express.Router();
 
 // 🔹 Criar uma nova tarefa
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     const task = new Task(req.body);
     await task.save();
@@ -16,7 +18,7 @@ router.post("/", async (req, res) => {
 });
 
 // 🔹 Buscar todas as tarefas
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     const tasks = await Task.find();
     res.json(tasks);
@@ -26,7 +28,7 @@ router.get("/", async (req, res) => {
 });
 
 // 🔹 Atualizar uma tarefa por ID
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -38,7 +40,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // 🔹 Excluir uma tarefa por ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: "Tarefa excluída" });
