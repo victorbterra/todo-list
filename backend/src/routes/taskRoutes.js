@@ -9,9 +9,25 @@ const router = express.Router();
 // 🔹 Criar uma nova tarefa
 router.post("/", auth, async (req, res) => {
   try {
-    const task = new Task(req.body);
+    const {
+      title, 
+      description, 
+      status, 
+      completed, 
+      priority, 
+      dueDate} = req.body;
+    const task = new Task({
+      title, 
+      description, 
+      status, 
+      user: req.user._id, 
+      completed, 
+      priority, 
+      dueDate
+    });
+
     await task.save();
-    res.status(201).json(task);
+    res.status(201).json({message:"Tarefa criada com sucesso !"},task);
   } catch (error) {
     res.status(500).json({ error: "Erro ao criar tarefa" });
   }
