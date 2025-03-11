@@ -11,37 +11,45 @@ router.post("/", auth, async (req, res) => {
   try {
     const {
       title, 
-      description, 
-      status, 
-      completed, 
+      description,
       priority, 
-      dueDate} = req.body;
+      status,
+    } = req.body;
+
     const task = new Task({
+      user:req.user.id,
       title, 
-      description, 
-      status, 
-      user: req.user._id, 
-      completed, 
+      description,
       priority, 
-      dueDate
+      status
     });
 
     await task.save();
-    res.status(201).json({message:"Tarefa criada com sucesso !"},task);
+    res.status(201).json(task);
   } catch (error) {
-    res.status(500).json({ error: "Erro ao criar tarefa" });
+    res.status(500).json({ error: "Erro ao criar tarefa", message: error.message });
   }
 });
 
-// 🔹 Buscar todas as tarefas
+// 🔹 Buscar uma tarefa por ID
 router.get("/", auth, async (req, res) => {
   try {
-    const tasks = await Task.find();
-    res.json(tasks);
+    const task = await Task.find({ user: req.user.id }).populate("user", "name email"); // Adiciona os dados do usuário
+    res.json(task);
   } catch (error) {
-    res.status(500).json({ error: "Erro ao buscar tarefas" });
+    res.status(500).json({ msg: "Erro ao buscar tarefas" });
   }
 });
+
+// // 🔹 Buscar todas as tarefas
+// router.get("/", auth, async (req, res) => {
+//   try {
+//     const tasks = await Task.find();
+//     res.json(tasks);
+//   } catch (error) {
+//     res.status(500).json({ error: "Erro ao buscar tarefas" });
+//   }
+// });
 
 // 🔹 Atualizar uma tarefa por ID
 router.put("/:id", auth, async (req, res) => {
