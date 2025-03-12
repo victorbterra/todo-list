@@ -7,7 +7,7 @@ import { body, validationResult } from "express-validator"; // Importa funções
 import User from "../models/authModels.js"; // Importa o modelo de usuário
 
 dotenv.config(); // Configura as variáveis de ambiente
-const router = express(); // Cria um roteador do express
+const app = express(); // Cria um roteador do express
 
 /**
  * @route POST /register
@@ -18,38 +18,33 @@ const router = express(); // Cria um roteador do express
  * @param {string} senha - A senha do usuário
  * @returns {object} - Uma mensagem de sucesso ou uma mensagem de erro
  */
-router.post(
-  "/register",
-  [
-    body("name").notEmpty().withMessage("Nome é obrigatório"), // Valida se o campo nome não está vazio
-    body("email").isEmail().withMessage("Email inválido"), // Valida se o campo email é um email válido
-    body("password")
-      .isLength({ min: 8 })
-      .withMessage("Senha deve ter no mínimo 8 caracteres"), // Valida se a senha tem no mínimo 8 caracteres
-  ],
-  async (req, res) => {
-    const errors = validationResult(req); // Armazena os erros de validação
-    if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() }); // Retorna erros se houver
+app.post("/register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-    const { name, email, password } = req.body; // Desestrutura os campos do corpo da requisição
-
-    try {
-      let user = await User.findOne({ email }); // Verifica se o usuário já existe
-      if (user) return res.status(400).json({ msg: "Usuário já existe" }); // Retorna erro se o usuário já existir
-
-      const salt = await bcrypt.genSalt(10); // Gera um salt para a senha
-      const senhaCriptografada = await bcrypt.hash(password, salt); // Criptografa a senha
-
-      user = new User({ name, email, password: senhaCriptografada }); // Cria um novo usuário
-      await user.save(); // Salva o usuário no banco de dados
-
-      res.status(200).json({ msg: "Usuário registrado com sucesso!" }); // Retorna mensagem de sucesso
-    } catch (error) {
-      res.status(500).json({ msg: "Erro no servidor" }); // Retorna erro de servidor
+    // Valida se todos os campos foram preenchidos
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Todos os campos são obrigatórios!" });
     }
+
+    // Verifique se o usuário já existe no banco de dados
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "Este e-mail já está cadastrado!" });
+    }
+
+    // Criptografar senha
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Criar novo usuário
+    const newUser = new User({ name, email, password: hashedPassword });
+    await newUser.save();
+
+    res.status(201).json({ message: "Usuário registrado com sucesso!" });
+  } catch (error) {
+    res.status(500).json({ message: "Erro interno no servidor!" });
   }
-);
+});
 
 /**
  * @route POST /login
@@ -59,35 +54,44 @@ router.post(
  * @param {string} senha - A senha do usuário
  * @returns {object} - Um token JWT ou uma mensagem de erro
  */
-router.post(
-  "/login",
-  [
-    body("email").isEmail().withMessage("Email inválido"), // Valida se o campo email é um email válido
-    body("password").notEmpty().withMessage("A senha é obrigatória"), // Valida se o campo senha não está vazio
-  ],
-  async (req, res) => {
-    const errors = validationResult(req); // Armazena os erros de validação
-    if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() }); // Retorna erros se houver
 
-    const { email, password } = req.body; // Desestrutura os campos do corpo da requisição
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-    try {
-      const user = await User.findOne({ email }); // Verifica se o usuário existe
-      if (!user) return res.status(400).json({ msg: "Usuário não encontrado" }); // Retorna erro se o usuário não existir
-
-      const isMatch = await bcrypt.compare(password, user.password); // Compara a senha fornecida com a senha armazenada
-      if (!isMatch) return res.status(400).json({ msg: "Senha incorreta" }); // Retorna erro se a senha estiver incorreta
-
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      }); // Gera um token JWT
-
-      res.status(200).json({ token }); // Retorna o token
-    } catch (error) {
-      res.status(500).json({ msg: "Erro no servidor" }); // Retorna erro de servidor
+    // Validação manual dos campos
+    if (!email || !password) {
+      return res.status(400).json({ msg: "E-mail e senha são obrigatórios." });
     }
-  }
-);
 
-export default router; // Exporta o roteador
+    // Verifica se o email é válido
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ msg: "E-mail inválido." });
+    }
+
+    // Verifica se o usuário existe
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ msg: "Usuário não encontrado." });
+    }
+
+    // Verifica se a senha está correta
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Senha incorreta." });
+    }
+
+    // Gera um token JWT
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Erro no login:", error);
+    res.status(500).json({ msg: "Erro no servidor." });
+  }
+});
+
+export default app; // Exporta o roteador
