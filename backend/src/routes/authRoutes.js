@@ -3,7 +3,6 @@ import dotenv from "dotenv"; // Importa o módulo dotenv para acessar variáveis
 import express from "express"; // Importa o módulo express
 import bcrypt from "bcryptjs"; // Importa o módulo bcryptjs para criptografia de senhas
 import jwt from "jsonwebtoken"; // Importa o módulo jsonwebtoken para criação de tokens JWT
-import { body, validationResult } from "express-validator"; // Importa funções do express-validator para validação de dados
 import User from "../models/authModels.js"; // Importa o modelo de usuário
 
 dotenv.config(); // Configura as variáveis de ambiente
@@ -72,6 +71,7 @@ app.post("/login", async (req, res) => {
 
     // Verifica se o usuário existe
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(400).json({ msg: "Usuário não encontrado." });
     }
@@ -86,8 +86,9 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+    const name = user.name;
 
-    res.status(200).json({ token });
+    res.status(200).json({ token, name });
   } catch (error) {
     console.error("Erro no login:", error);
     res.status(500).json({ msg: "Erro no servidor." });
