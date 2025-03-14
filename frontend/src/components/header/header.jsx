@@ -26,22 +26,24 @@ export default function Header() {
   return (
     <>
       <header className="bg-sky-700 text-white h-min-screen w-min-screen py-8 px-4 flex items-center justify-between">
-        <div className="">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-        </div>
-        <div>
-          <div className="flex flex-row gap-4 items-center">
-            <button
-              className="cursor-pointer font-semibold text-white px-3 py-1 hover:bg-sky-500 rounded duration-150"
-              onClick={handleLogout}
-              >
-              Sair
-            </button>
+        <div className="w-full flex items-center justify-between lg:max-w-3xl mx-auto">
+          <div className="">
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+          </div>
+          <div>
+            <div className="flex flex-row gap-4 items-center">
+              <button
+                className="cursor-pointer font-semibold text-white px-3 py-1 hover:bg-sky-500 rounded duration-150"
+                onClick={handleLogout}
+                >
+                Sair
+              </button>
+            </div>
           </div>
         </div>
       </header>
-      <div className="p-4">
-        <h1 className="text-xl font-medium">Seja bem vindo <span className="font-bold">{userName}</span></h1>
+      <div className="lg:max-w-3xl mx-auto my-3">
+        <h1 className="text-xl font-medium px-3">Seja bem vindo <span className="font-bold">{userName}</span></h1>
       </div>
     </>
   );

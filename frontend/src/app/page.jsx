@@ -3,13 +3,27 @@
 import React, { useState } from 'react';
 import Header from '@/components/header/header';
 import Taskmodal from '@/components/taskmodal/taskModal';
+import TaskList from '@/components/tasklist/tasklist';
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
 
   const handleAddTask = (task) => {
-    setTasks([...tasks, task]);
+    if (!task) {
+      console.error('handleAddTask: task is null or undefined');
+      return;
+    }
+
+    setTasks((prevTasks) => {
+      if (!prevTasks) {
+        console.error('handleAddTask: prevTasks is null or undefined');
+        return [task];
+      }
+
+      return [...prevTasks, task];
+    });
+
     setIsOpen(false);
   };
 
@@ -35,11 +49,9 @@ const Home = () => {
           />
         </svg>
       </button>
-      <Taskmodal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onSubmit={handleAddTask}
+      <Taskmodal isOpen={isOpen}onClose={() => setIsOpen(false)} onSubmit={handleAddTask}
       />
+      <TaskList />
     </>
   );
 };
