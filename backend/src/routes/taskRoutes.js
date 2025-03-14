@@ -12,16 +12,16 @@ router.post("/", auth, async (req, res) => {
     const {
       title, 
       description,
-      priority, 
-      status,
+      priority,
+      dueDate,
     } = req.body;
 
     const task = new Task({
       user:req.user.id,
       title, 
       description,
-      priority, 
-      status
+      priority,
+      dueDate,
     });
 
     await task.save();
